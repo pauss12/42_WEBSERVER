@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>{{status}} — {{title}}</title>
+  <style>
+    :root{
+      --bg:#f3f6fb;
+      --card:#ffffff;
+      --muted:#6b7280;
+      --accent:#2b7cff;
+      --accent-2:#0066ff;
+      --danger:#ef4444;
+    }
+    html,body{height:100%;margin:0}
+    *{box-sizing:border-box}
+    body{
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+      background: linear-gradient(180deg, #f7fbff 0%, var(--bg) 60%);
+      color:#071034;
+      display:grid;
+      place-items:center;
+      padding:32px;
+      min-height:100vh;
+    }
+
+    .card{
+      width:100%;
+      max-width: 1000px;;
+      background:var(--card);
+      border-radius:18px;
+      padding:36px;
+      box-shadow: 0 12px 40px rgba(8,24,48,0.12);
+      display:flex;
+      gap:28px;
+      align-items:center;
+      transition:transform .18s ease;
+      overflow:visible;
+    }
+    .card:focus-within, .card:hover{transform:translateY(-4px)}
+
+    .visual{
+      width:160px;
+      height:160px;
+      border-radius:12px;
+      background: linear-gradient(135deg,var(--accent) 0%, var(--accent-2) 100%);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:white;
+      flex-shrink:0;
+      overflow:hidden;
+    }
+
+    /* make external image scale to fit inside the visual box */
+    .visual img{
+      display:block;
+      width:100%;
+      height:102%;
+      object-fit:contain;
+      object-position:center;
+      margin:0;
+      background:#fff;
+      padding:0;
+      border-radius:8px;
+    }
+
+    .content{flex:1;min-width:0;word-wrap:break-word;overflow-wrap:break-word;display:flex;flex-direction:column;justify-content:flex-start;gap:12px;min-height:160px}
+    .status {
+      font-size: 56px;
+      line-height: 1.1;
+      color: #101827; /* Dark charcoal for light mode or #ffffff for dark mode */
+      font-weight: 700;
+      margin: 0;
+    }
+    
+    .title{font-size:24px;margin:0;color:#101827;font-weight:500}
+    .message{color:var(--muted);margin:0;line-height:1.5;font-size:15px}
+    .suggestions{font-size:15px;line-height:1.5;color:var(--muted);margin-top:auto;width:100%;display:flex;justify-content:flex-end}
+    .suggestions p{margin:0;max-width:65%;text-align:right}
+    .suggestions a{color:var(--accent);text-decoration:none;font-weight:500}
+    .suggestions a:hover{text-decoration:underline}
+
+    .actions{
+      display:flex;
+      gap:12px;
+      align-items:center
+    }
+    .btn{
+      display:inline-flex;align-items:center;gap:10px;padding:10px 16px;border-radius:10px;border:0;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#fff;text-decoration:none;font-weight:600;box-shadow:0 6px 18px rgba(43,124,255,0.18)
+    }
+    .btn.secondary{background:transparent;color:var(--accent);border:1px solid rgba(43,124,255,0.12)}
+
+    .meta{margin-top:14px;color:var(--muted);font-size:13px}
+
+    @media (max-width:760px){
+      .card{flex-direction:column;align-items:stretch;padding:20px}
+      .visual{width:100%;height:120px;border-radius:12px}
+      .status{font-size:40px}
+      .content{min-height:0}
+      .suggestions{justify-content:flex-start}
+      .suggestions p{max-width:100%;text-align:left}
+    }
+
+  </style>
+</head>
+<body>
+  <article class="card" role="alert">
+    <!-- <div class="visual {{visual_class}}" aria-hidden="true">
+      <title>{{status}} — {{title}}</title>
+  
+      <link rel="icon" href="{{favicon}}" />
+    </div> -->
+
+    <div class="visual {{visual_class}}" aria-hidden="true">
+      <img src="{{image}}" alt="{{title}}" />
+    </div>
+
+    <div class="content">
+      <h1 class="status">{{status}}</h1>
+      <div class="title">{{title}}</div>
+      <p class="message">{{message}}</p>
+
+      <div class="actions">
+        <a href="/" class="btn">Go home</a>
+        <a href="javascript:location.reload()" class="btn secondary">Try again</a>
+      </div>
+
+      <div class="meta">Request id: <strong>{{request_id}}</strong></div>
+      <div class="suggestions"><p>Suggestions: check the URL, try <a href="/">home</a>, or search the site.</p></div>
+    </div>
+  </article>
+</body>
+</html>

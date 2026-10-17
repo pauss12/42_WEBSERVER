@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="theme-color" content="#2b7cff">
+<!-- simple SVG data favicon to decorate the browser tab -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%232b7cff'/%3E%3Cpath d='M32 16 L32 40 M22 26 L32 16 L42 26' stroke='%23fff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E">
+<title>&#128228; File Uploader</title>
+<style>
+  :root{
+    --bg:#f6f7fb; --card:#ffffff; --accent:#2b7cff; --accent-2:#5a8cff; --muted:#6b7280;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family:Inter, system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;
+    -webkit-font-smoothing:antialiased;
+    background:var(--bg);
+    color:#0f1724;
+  }
+  .wrap{max-width:760px;margin:32px auto;padding:20px}
+  .card{
+    background:var(--card);
+    border-radius:12px;
+    padding:22px;
+    box-shadow:0 10px 30px rgba(10,20,40,0.06);
+    border:1px solid rgba(16,24,40,0.04);
+  }
+  h1{margin:0 0 10px;font-size:1.5rem}
+  p.lead{margin:0 0 18px;color:var(--muted);line-height:1.4}
+
+  /* layout: single-column upload area (cola integrada debajo del formulario) */
+  .grid{display:block;gap:16px}
+  @media (min-width:900px){ .wrap{max-width:900px} }
+
+  /* dropzone / form */
+  .drop{
+    border:2px dashed rgba(43,124,255,0.20);
+    padding:26px;border-radius:12px;text-align:center;min-height:160px;display:flex;flex-direction:column;justify-content:center;gap:12px;
+    transition:background .18s, border-color .18s, transform .12s ease;
+    background:linear-gradient(180deg, rgba(255,255,255,0.6), rgba(245,248,255,0.6));
+  }
+  .drop::before{ content: '\1F4C1'; font-size:36px; display:block; margin:-6px 0 2px; }
+  .drop.drag{background:linear-gradient(180deg, rgba(43,124,255,0.05), rgba(43,124,255,0.02));border-color:var(--accent);transform:translateY(-2px)}
+  .muted{color:var(--muted);font-size:.95rem}
+  .btn{
+    display:inline-block;padding:10px 14px;border-radius:10px;background:linear-gradient(180deg,var(--accent),var(--accent-2));color:#fff;text-decoration:none;border:none;cursor:pointer;
+    box-shadow:0 6px 18px rgba(43,124,255,0.14);transition:transform .12s ease, box-shadow .12s ease, opacity .12s ease;
+  }
+  .btn:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(43,124,255,0.14)}
+  .btn.alt{
+    background:linear-gradient(180deg,#e7a407,#fbb00f);
+    color:#2d3a57;
+    border:1px solid rgba(43,124,255,0.22);
+    box-shadow:0 6px 16px rgba(12,24,48,0.08);
+  }
+  .btn.alt:hover{
+    box-shadow:0 10px 24px rgba(12,24,48,0.12);
+  }
+  input[type="file"]{display:none}
+
+  .meta{padding:12px}
+  .file-row{display:flex;align-items:center;gap:10px;padding:10px;border-radius:8px;background:linear-gradient(180deg, #fff, #fbfcff);margin-bottom:8px;box-shadow:0 1px 0 rgba(10,20,40,0.02)}
+  .file-row:hover{background:#fbfdff}
+  .file-name{flex:1;font-size:.95rem;color:#0f1724}
+  .progress{height:8px;background:#eef2ff;border-radius:6px;overflow:hidden;width:100%;max-width:220px}
+  .progress > i{display:block;height:100%;width:0;background:var(--accent);transition:width .18s linear}
+
+  .status{font-size:.85rem;color:var(--muted)}
+  .small{font-size:.85rem;color:var(--muted);margin-top:8px}
+
+  /* messages area */
+  #messages{min-height:26px}
+  #messages .status{margin-top:6px}
+
+  @media (max-width:480px){
+    .drop{min-height:140px;padding:18px}
+    .file-row{padding:8px}
+    .progress{max-width:140px}
+  }
+  /* features and footer */
+  .features{display:flex;gap:12px;margin:14px 0 18px}
+  .feature{flex:1;background:linear-gradient(180deg,#fff,#fbfdff);padding:12px;border-radius:10px;border:1px solid rgba(16,24,40,0.03);box-shadow:0 6px 16px rgba(10,20,40,0.03);text-align:left}
+  .feature strong{display:block;font-size:1rem;margin-bottom:6px;color:#0f1724}
+  .kicker{font-weight:600;color:var(--accent);font-size:.95rem;margin-bottom:6px}
+  .footer{max-width:760px;margin:28px auto 40px;padding:12px;color:var(--muted);font-size:.9rem;text-align:center}
+  .footer a{text-decoration:none;transition:color .12s ease,transform .12s ease,opacity .12s ease;color:var(--accent)}
+  .footer a:hover{text-decoration:none;opacity:0.95;transform:translateY(-1px)}
+  .footer a .gh-icon{width:16px;height:16px;vertical-align:middle;margin-right:8px;fill:currentColor;display:inline-block}
+  .hint{margin-top:12px;padding:10px;background:linear-gradient(180deg, rgba(43,124,255,0.03), rgba(255,255,255,0.02));border-radius:8px;border:1px solid rgba(43,124,255,0.04)}
+  @media (max-width:700px){ .features{flex-direction:column} }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+  <h1>Upload files</h1>
+  <p class="lead">Drag & drop files or use the button. Supports multiple files of any type and shows progress.</p>
+
+  <div class="features" aria-hidden="false">
+    <div class="feature">
+      <div class="kicker">Secure</div>
+      <strong>Encrypted transfer</strong>
+      <div class="small">All uploads use TLS when served over HTTPS.</div>
+    </div>
+    <div class="feature">
+      <div class="kicker">Fast</div>
+      <strong>Streaming-friendly</strong>
+      <div class="small">Sends files sequentially with progress updates for a smooth UI.</div>
+    </div>
+    <div class="feature">
+      <div class="kicker">Simple</div>
+      <strong>Drop, pick, and go</strong>
+      <div class="small">Minimal UI focused on quick uploads and clear feedback.</div>
+    </div>
+  </div>
+
+      <div class="grid">
+        <div>
+          <form id="uploadForm" action="/upload" method="POST" enctype="multipart/form-data" novalidate>
+            <label id="dropzone" class="drop" for="fileInput">
+              <strong>Drag files here</strong>
+              <div class="muted">or</div>
+              <button type="button" id="pickBtn" class="btn">Select files</button>
+              <input id="fileInput" name="files" type="file" multiple accept="*/*">
+              <div class="small">Server accepts POST /upload with multipart/form-data for any file type.</div>
+            </label>
+
+            <div style="margin-top:12px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+              <button id="sendBtn" class="btn" type="button">Upload</button>
+              <button id="fallbackSubmit" class="btn alt" type="submit">Submit All</button>
+            </div>
+          </form>
+
+          <div style="margin-top:12px;display:flex;justify-content:flex-end;">
+            <button id="viewUploadsBtn" class="btn" type="button" onclick="window.location.href='/showUploads'">View Uploaded Files</button>
+          </div>
+
+
+          <div id="messages" style="margin-top:12px"></div>
+          <div class="hint">Tip: You can drag multiple files at once. Large files will be rejected if they exceed 50MB, and any file type is allowed.</div>
+        </div>
+
+        <aside class="card meta" aria-labelledby="uploadListTitle">
+          <h2 id="uploadListTitle" style="margin:0 0 8px;font-size:1rem">Upload queue</h2>
+          <div id="fileList"></div>
+          <div id="overall" class="small"></div>
+
+          <div id="uploadedList" class="small">Loading...</div>
+        </aside>
+      </div>
+    </div>
+  </div>
+
+    </div>
+  </div>
+
+  <div class="footer">
+    <div>&copy; 2026 Uploader &mdash; built for <strong>42_Webserv</strong></div>
+    <div>Built by <a href="https://github.com/palgarob" target="_blank" rel="noopener noreferrer">pepaloma</a>
+    and <a href="https://github.com/pauss12" target="_blank" rel="noopener noreferrer">pmendez-</a>
+  </div>
+    <div style="margin-top:8px">
+      <a href="https://github.com/palgarob/webserv-42/blob/Paula/README.md" style="color:var(--accent);text-decoration:none;margin-right:10px">About</a>
+      <a href="https://github.com/palgarob/webserv-42/blob/Paula/doc/guia-webserv.md" style="color:var(--accent);text-decoration:none;margin-right:10px">Docs</a>
+      <a href="https://github.com/palgarob/webserv-42/tree/Pedro" target="_blank" rel="noopener noreferrer">
+        <img src="/img/icons/github.svg" class="gh-icon" alt="GitHub"> Source
+      </a>
+    </div>
+  </div>
+
+  <script>
+(function(){
+  const fileInput = document.getElementById('fileInput');
+  const pickBtn = document.getElementById('pickBtn');
+  const dropzone = document.getElementById('dropzone');
+  const fileList = document.getElementById('fileList');
+  const uploadedList = document.getElementById('uploadedList');
+  const sendBtn = document.getElementById('sendBtn');
+  const messages = document.getElementById('messages');
+  const form = document.getElementById('uploadForm');
+
+  let files = [];
+
+  function renderList(){
+    fileList.innerHTML = '';
+    files.forEach((f, idx)=>{
+      const row = document.createElement('div'); row.className='file-row';
+      const name = document.createElement('div'); name.className='file-name'; name.textContent = f.name;
+      const size = document.createElement('div'); size.className='status'; size.textContent = Math.round(f.size/1024) + ' KB';
+      const progWrap = document.createElement('div'); progWrap.className='progress';
+      const progBar = document.createElement('i');
+      progBar.style.width = '0%';
+      progWrap.appendChild(progBar);
+      row.appendChild(name); row.appendChild(size); row.appendChild(progWrap);
+      fileList.appendChild(row);
+      // attach progress node for updates
+      f._ui = {bar: progBar, row};
+    });
+  document.getElementById('overall').textContent = files.length ? files.length + ' file(s) ready' : '';
+  }
+
+  function addFiles(list){
+    const arr = Array.from(list);
+    arr.forEach(f=>{
+      // simple sanity: max 50 MB per file example
+      const MAX = 50 * 1024 * 1024;
+      if (f.size > MAX){
+        const p = document.createElement('div'); p.className='status'; p.textContent = f.name + ' is too large (max 50MB)'; messages.appendChild(p);
+      } else {
+        files.push(f);
+      }
+    });
+    renderList();
+  }
+
+  pickBtn.addEventListener('click', ()=> fileInput.click());
+  fileInput.addEventListener('change', (e)=> addFiles(e.target.files));
+  form.addEventListener('submit', (e)=>{
+    e.preventDefault();
+    uploadAll();
+  });
+
+  ;['dragenter','dragover'].forEach(ev=>{
+    dropzone.addEventListener(ev, (e)=>{ e.preventDefault(); e.stopPropagation(); dropzone.classList.add('drag'); }, false);
+  });
+  ;['dragleave','drop'].forEach(ev=>{
+    dropzone.addEventListener(ev, (e)=>{ e.preventDefault(); e.stopPropagation(); dropzone.classList.remove('drag'); }, false);
+  });
+  dropzone.addEventListener('drop', (e)=> addFiles(e.dataTransfer.files));
+
+
+  <!-- render uploaded files list -->
+  function uploadAll() {
+    if (!files.length) {
+      messages.textContent = 'No files to upload.';
+      return;
+    }
+    messages.textContent = '';
+
+    const xhr = new XMLHttpRequest();
+    const formData = new FormData();
+
+    // Anadir todos los ficheros del array al mismo FormData bajo el mismo nombre 'files'
+    files.forEach(file => {
+      formData.append('files', file, file.name);
+    });
+
+    xhr.open('POST', form.action || '/upload', true);
+
+    // Barra de progreso global (o puedes mantener barras individuales si prefieres)
+    xhr.upload.addEventListener('progress', (e) => {
+      if (e.lengthComputable) {
+        const pct = Math.round((e.loaded / e.total) * 100);
+        files.forEach(f => {
+          if (f._ui && f._ui.bar) f._ui.bar.style.width = pct + '%';
+        });
+      }
+    });
+
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4) {
+        const ok = xhr.status >= 200 && xhr.status < 300;
+
+        if (!ok && xhr.responseText) {
+          document.open();
+          document.write(xhr.responseText);
+          document.close();
+          return;
+        }
+
+        const statusNode = document.createElement('div');
+        statusNode.className = 'status';
+        statusNode.textContent = ok ? 'All files uploaded successfully!' : ('Error: ' + xhr.status);
+        messages.appendChild(statusNode);
+
+        if (ok) {
+          loadUploadedFiles();
+        }
+      }
+    };
+
+    xhr.onerror = function () {
+      messages.appendChild(Object.assign(document.createElement('div'), { textContent: 'Network error' }));
+    };
+
+    xhr.send(formData);
+  }
+
+
+  <!-- Render the list of uploaded files -->
+
+  function renderUploadedFiles(filesData){
+    if (!Array.isArray(filesData) || !filesData.length){
+      uploadedList.textContent = 'No uploaded files yet.';
+      return;
+    }
+
+    var sortedFiles = filesData.slice(0);
+    sortedFiles.sort(function (left, right) {
+      return (Number(right && right.mtime) || 0) - (Number(left && left.mtime) || 0);
+    });
+
+    const list = document.createElement('ul');
+    list.style.margin = '0';
+    list.style.paddingLeft = '18px';
+
+    sortedFiles.forEach((item)=>{
+      const li = document.createElement('li');
+      const kb = Math.round((item.size || 0) / 1024);
+      li.textContent = item.name + ' (' + kb + ' KB)';
+      if (/\.(png|jpe?g|gif|webp|avif|svg)$/i.test(String(item && item.name ? item.name : '')))
+        li.className = 'highlight-file';
+      list.appendChild(li);
+    });
+
+    uploadedList.innerHTML = '';
+    uploadedList.appendChild(list);
+  }
+
+  function loadUploadedFiles(){
+    const xhr = new XMLHttpRequest();
+    // /uploads/ es un directorio con autoindex: con este Accept el servidor
+    // devuelve el listado en JSON en vez de en HTML
+    xhr.open('GET', '/uploads/', true);
+    xhr.setRequestHeader('Accept', 'application/json');
+    xhr.onreadystatechange = function(){
+      if (xhr.readyState !== 4)
+        return;
+
+      if (xhr.status >= 200 && xhr.status < 300){
+        try {
+          const payload = JSON.parse(xhr.responseText || '{}');
+          renderUploadedFiles(payload.files || []);
+        } catch (e) {
+          uploadedList.textContent = 'Could not parse uploaded files list.';
+        }
+      } else {
+        uploadedList.textContent = 'Could not load uploaded files.';
+      }
+    };
+    xhr.onerror = function(){
+      uploadedList.textContent = 'Could not load uploaded files.';
+    };
+    xhr.send();
+  }
+
+  function uploadFile(file)
+  {
+    return new Promise((resolve)=>{
+      const xhr = new XMLHttpRequest();
+      const formData = new FormData();
+
+      formData.append('files', file, file.name);
+
+      if (file._ui && file._ui.bar)
+        file._ui.bar.style.width = '0%';
+
+      xhr.open('POST', form.action || '/upload', true);
+      xhr.upload.addEventListener('progress', (e)=>{
+        if (e.lengthComputable && file._ui && file._ui.bar){
+          const pct = Math.round((e.loaded / e.total) * 100);
+          file._ui.bar.style.width = pct + '%';
+        }
+      });
+      xhr.onreadystatechange = function(){
+        if (xhr.readyState === 4){
+          if (file._ui && file._ui.bar)
+            file._ui.bar.style.width = '100%';
+
+          const ok = xhr.status >= 200 && xhr.status < 300;
+
+          if (!ok && xhr.responseText){
+            document.open();
+            document.write(xhr.responseText); 
+            document.close();
+            resolve(false);
+            return;
+          }
+
+          const statusNode = document.createElement('div');
+          statusNode.className='status';
+          statusNode.textContent = file.name + ' \u2192 ' + (ok ? 'OK' : ('Error: ' + xhr.status));
+          messages.appendChild(statusNode);
+          resolve(ok);
+        }
+      };
+      xhr.onerror = function(){
+        if (file._ui && file._ui.bar)
+          file._ui.bar.style.width = '100%';
+        messages.appendChild(Object.assign(document.createElement('div'),{textContent:'Network error'}));
+        resolve(false);
+      };
+      xhr.send(formData);
+    });
+  }
+
+  sendBtn.addEventListener('click', uploadAll);
+  loadUploadedFiles();
+
+  dropzone.addEventListener('keydown', (e)=>{ if (e.key === 'Enter' || e.key === ' ') { fileInput.click(); e.preventDefault(); }})
+})();
+</script>
+</body>
+</html>

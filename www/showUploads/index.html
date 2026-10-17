@@ -1,0 +1,477 @@
+<!doctype html>
+<html lang="es">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Archivos Subidos</title>
+	<style>
+		:root {
+			--bg-1: #f4efe7;
+			--bg-2: #d8e7ec;
+			--card: #fffdf9;
+			--ink: #1f2937;
+			--muted: #5b6473;
+			--accent: #136f63;
+			--accent-strong: #0f5a51;
+			--danger: #c44536;
+			--danger-strong: #a72e22;
+			--line: rgba(24, 32, 46, 0.1);
+			--shadow: 0 20px 50px rgba(17, 34, 68, 0.12);
+		}
+
+		* {
+			box-sizing: border-box;
+		}
+
+		body {
+			margin: 0;
+			font-family: "Avenir Next", "Trebuchet MS", "Segoe UI", sans-serif;
+			color: var(--ink);
+			background:
+				radial-gradient(circle at 10% 20%, rgba(19, 111, 99, 0.14) 0, rgba(19, 111, 99, 0) 45%),
+				radial-gradient(circle at 85% 10%, rgba(66, 133, 244, 0.14) 0, rgba(66, 133, 244, 0) 42%),
+				linear-gradient(135deg, var(--bg-1), var(--bg-2));
+			min-height: 100vh;
+			padding: 32px 16px 40px;
+		}
+
+		.container {
+			max-width: 1080px;
+			margin: 0 auto;
+		}
+
+		.hero {
+			display: flex;
+			justify-content: space-between;
+			align-items: end;
+			gap: 16px;
+			margin-bottom: 20px;
+			animation: fadeInUp 500ms ease;
+		}
+
+		.hero h1 {
+			margin: 0;
+			font-size: clamp(1.6rem, 3vw, 2.4rem);
+			letter-spacing: 0.02em;
+		}
+
+		.hero p {
+			margin: 8px 0 0;
+			color: var(--muted);
+			max-width: 60ch;
+		}
+
+		.toolbar {
+			display: flex;
+			gap: 10px;
+			flex-wrap: wrap;
+			animation: fadeInUp 620ms ease;
+		}
+
+		.btn {
+			border: 0;
+			border-radius: 999px;
+			padding: 10px 16px;
+			font-size: 0.95rem;
+			font-weight: 700;
+			letter-spacing: 0.01em;
+			cursor: pointer;
+			transition: transform 130ms ease, box-shadow 130ms ease, background 130ms ease;
+		}
+
+		.btn:hover {
+			transform: translateY(-1px);
+		}
+
+		.btn:active {
+			transform: translateY(0);
+		}
+
+		.btn-primary {
+			background: linear-gradient(165deg, var(--accent), #1f8d7f);
+			color: #fff;
+			box-shadow: 0 10px 24px rgba(19, 111, 99, 0.28);
+		}
+
+		.btn-primary:hover {
+			background: linear-gradient(165deg, var(--accent-strong), #1a776b);
+		}
+
+		.btn-soft {
+			background: #ffffffcc;
+			color: var(--ink);
+			border: 1px solid var(--line);
+		}
+
+		.panel {
+			margin-top: 16px;
+			background: var(--card);
+			border-radius: 18px;
+			box-shadow: var(--shadow);
+			border: 1px solid rgba(255, 255, 255, 0.5);
+			overflow: hidden;
+			animation: fadeInUp 760ms ease;
+		}
+
+		.panel-top {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			gap: 12px;
+			padding: 16px 18px;
+			border-bottom: 1px solid var(--line);
+			background: linear-gradient(180deg, rgba(19, 111, 99, 0.06), rgba(19, 111, 99, 0.01));
+		}
+
+		.meta {
+			color: var(--muted);
+			font-size: 0.92rem;
+		}
+
+		.list {
+			display: grid;
+			grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+			gap: 14px;
+			padding: 16px;
+		}
+
+		.card {
+			border: 1px solid var(--line);
+			background: linear-gradient(180deg, #fff, #fffcf6);
+			border-radius: 14px;
+			padding: 14px;
+			display: flex;
+			flex-direction: column;
+			gap: 10px;
+			transition: transform 140ms ease, box-shadow 140ms ease;
+			transform-origin: center;
+		}
+
+		.card:hover {
+			transform: translateY(-2px);
+			box-shadow: 0 12px 30px rgba(20, 33, 61, 0.1);
+		}
+
+		.name {
+			margin: 0;
+			font-size: 1rem;
+			line-height: 1.35;
+			overflow-wrap: anywhere;
+		}
+
+		.size {
+			margin: 0;
+			color: var(--muted);
+			font-size: 0.9rem;
+		}
+
+		.actions {
+			margin-top: auto;
+			display: flex;
+			gap: 8px;
+			flex-wrap: wrap;
+		}
+
+		.btn-ghost {
+			background: #f4f7f9;
+			color: #17374f;
+			border: 1px solid rgba(23, 55, 79, 0.2);
+			padding: 8px 12px;
+			border-radius: 10px;
+			cursor: pointer;
+			font-weight: 600;
+		}
+
+		.btn-danger {
+			background: linear-gradient(160deg, var(--danger), #dd5c4f);
+			color: #fff;
+			border: 0;
+			padding: 8px 12px;
+			border-radius: 10px;
+			cursor: pointer;
+			font-weight: 700;
+			box-shadow: 0 10px 22px rgba(196, 69, 54, 0.25);
+		}
+
+		.btn-danger:hover {
+			background: linear-gradient(160deg, var(--danger-strong), #c94537);
+		}
+
+		.empty {
+			padding: 28px 18px;
+			color: var(--muted);
+			text-align: center;
+		}
+
+		.hidden {
+			display: none !important;
+		}
+
+		.modal-backdrop {
+			position: fixed;
+			inset: 0;
+			display: grid;
+			place-items: center;
+			background: rgba(20, 20, 20, 0.44);
+			padding: 16px;
+			z-index: 50;
+			animation: fadeIn 180ms ease;
+		}
+
+		.modal {
+			width: min(460px, 100%);
+			background: #fff;
+			border-radius: 16px;
+			padding: 18px;
+			box-shadow: 0 26px 50px rgba(0, 0, 0, 0.25);
+			border: 1px solid #ebeff6;
+			animation: fadeInUp 220ms ease;
+		}
+
+		.modal h2 {
+			margin: 0;
+			font-size: 1.2rem;
+		}
+
+		.modal p {
+			color: #3d4e63;
+			line-height: 1.45;
+			margin: 10px 0 16px;
+			overflow-wrap: anywhere;
+		}
+
+		.modal-actions {
+			display: flex;
+			justify-content: end;
+			gap: 10px;
+			flex-wrap: wrap;
+		}
+
+		@keyframes fadeInUp {
+			from {
+				opacity: 0;
+				transform: translateY(12px);
+			}
+			to {
+				opacity: 1;
+				transform: translateY(0);
+			}
+		}
+
+		@keyframes fadeIn {
+			from {
+				opacity: 0;
+			}
+			to {
+				opacity: 1;
+			}
+		}
+	</style>
+</head>
+<body>
+	<main class="container">
+		<section class="hero">
+			<div>
+				<h1>Tus archivos subidos</h1>
+				<p>Visualiza lo que ya tienes en el servidor, abre cada archivo y elige si quieres eliminarlo o conservarlo.</p>
+			</div>
+			<div class="toolbar">
+				<button class="btn btn-soft" id="goUpload" type="button">Ir a subir archivos</button>
+				<button class="btn btn-primary" id="reload" type="button">Actualizar lista</button>
+			</div>
+		</section>
+
+		<section class="panel">
+			<header class="panel-top">
+				<strong id="count">0 archivos</strong>
+				<span class="meta" id="status">Cargando...</span>
+			</header>
+			<div class="list" id="fileList"></div>
+			<p class="empty hidden" id="emptyState">No hay archivos subidos todavia.</p>
+		</section>
+	</main>
+
+	<div class="modal-backdrop hidden" id="confirmModal" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+		<div class="modal">
+			<h2 id="confirmTitle">Eliminar archivo</h2>
+			<p id="confirmText"></p>
+			<div class="modal-actions">
+				<button class="btn btn-soft" id="cancelDelete" type="button">Cancelar</button>
+				<button class="btn btn-danger" id="confirmDelete" type="button">Si, eliminar</button>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		(function () {
+			var listNode = document.getElementById('fileList');
+			var emptyNode = document.getElementById('emptyState');
+			var countNode = document.getElementById('count');
+			var statusNode = document.getElementById('status');
+			var reloadBtn = document.getElementById('reload');
+			var goUploadBtn = document.getElementById('goUpload');
+
+			var modal = document.getElementById('confirmModal');
+			var confirmText = document.getElementById('confirmText');
+			var confirmDeleteBtn = document.getElementById('confirmDelete');
+			var cancelDeleteBtn = document.getElementById('cancelDelete');
+
+			var pendingDelete = null;
+
+			function humanSize(bytes) {
+				if (!bytes || bytes < 1024) return (bytes || 0) + ' B';
+				var kb = bytes / 1024;
+				if (kb < 1024) return kb.toFixed(1) + ' KB';
+				var mb = kb / 1024;
+				if (mb < 1024) return mb.toFixed(1) + ' MB';
+				var gb = mb / 1024;
+				return gb.toFixed(2) + ' GB';
+			}
+
+			function sanitizeName(name) {
+				return String(name || '').replace(/\//g, '_');
+			}
+
+			function setStatus(text) {
+				statusNode.textContent = text;
+			}
+
+			function renderFiles(files) {
+				listNode.innerHTML = '';
+
+				var total = Array.isArray(files) ? files.length : 0;
+				countNode.textContent = total + (total === 1 ? ' archivo' : ' archivos');
+
+				if (!total) {
+					emptyNode.classList.remove('hidden');
+					return;
+				}
+
+				emptyNode.classList.add('hidden');
+
+				files.forEach(function (file, idx) {
+					var card = document.createElement('article');
+					card.className = 'card';
+					card.style.animation = 'fadeInUp 250ms ease ' + (idx * 25) + 'ms both';
+
+					var title = document.createElement('h3');
+					title.className = 'name';
+					title.textContent = file.name || 'sin_nombre';
+
+					var size = document.createElement('p');
+					size.className = 'size';
+					size.textContent = 'Tamano: ' + humanSize(file.size || 0);
+
+					var actions = document.createElement('div');
+					actions.className = 'actions';
+
+					var viewBtn = document.createElement('button');
+					viewBtn.className = 'btn-ghost';
+					viewBtn.type = 'button';
+					viewBtn.textContent = 'Abrir';
+					viewBtn.addEventListener('click', function () {
+						window.open('/uploads/' + encodeURIComponent(sanitizeName(file.name)), '_blank');
+					});
+
+					var deleteBtn = document.createElement('button');
+					deleteBtn.className = 'btn-danger';
+					deleteBtn.type = 'button';
+					deleteBtn.textContent = 'Eliminar';
+					deleteBtn.addEventListener('click', function () {
+						openConfirm(file.name);
+					});
+
+					actions.appendChild(viewBtn);
+					actions.appendChild(deleteBtn);
+
+					card.appendChild(title);
+					card.appendChild(size);
+					card.appendChild(actions);
+
+					listNode.appendChild(card);
+				});
+			}
+
+			function fetchUploads() {
+				setStatus('Actualizando lista...');
+
+				fetch('/uploads/?_t=' + Date.now(), { method: 'GET', headers: { 'Accept': 'application/json' } })
+					.then(function (res) {
+						if (!res.ok) {
+							throw new Error('No se pudo cargar la lista (' + res.status + ')');
+						}
+						return res.json();
+					})
+					.then(function (payload) {
+						var files = payload && Array.isArray(payload.files) ? payload.files : [];
+						renderFiles(files);
+						setStatus('Lista actualizada');
+					})
+					.catch(function (err) {
+						renderFiles([]);
+						setStatus(err.message || 'Error cargando archivos');
+					});
+			}
+
+			function openConfirm(fileName) {
+				pendingDelete = fileName;
+				confirmText.textContent = 'Vas a eliminar "' + fileName + '". Esta accion no se puede deshacer. Quieres continuar?';
+				modal.classList.remove('hidden');
+			}
+
+			function closeConfirm() {
+				pendingDelete = null;
+				modal.classList.add('hidden');
+			}
+
+			function deleteFile(fileName) {
+				if (!fileName) return;
+
+				setStatus('Eliminando archivo...');
+
+				fetch('/uploads/' + encodeURIComponent(sanitizeName(fileName)), {
+					method: 'DELETE'
+				})
+					.then(function (res) {
+						if (!res.ok && res.status !== 204) {
+							throw new Error('No se pudo eliminar (' + res.status + ')');
+						}
+						setStatus('Archivo eliminado');
+						fetchUploads();
+					})
+					.catch(function (err) {
+						setStatus(err.message || 'Error al eliminar archivo');
+					})
+
+				window.location.reload();
+			}
+
+			reloadBtn.addEventListener('click', fetchUploads);
+			goUploadBtn.addEventListener('click', function () {
+				window.location.href = '/';
+			});
+
+			confirmDeleteBtn.addEventListener('click', function () {
+				var toDelete = pendingDelete;
+				closeConfirm();
+				deleteFile(toDelete);
+			});
+
+			cancelDeleteBtn.addEventListener('click', closeConfirm);
+			modal.addEventListener('click', function (event) {
+				if (event.target === modal) {
+					closeConfirm();
+				}
+			});
+
+			document.addEventListener('keydown', function (event) {
+				if (event.key === 'Escape' && !modal.classList.contains('hidden')) {
+					closeConfirm();
+				}
+			});
+
+			fetchUploads();
+		})();
+	</script>
+</body>
+</html>

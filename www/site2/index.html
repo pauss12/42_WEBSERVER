@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>webserv — second site</title>
+  <style>
+    body { margin: 0; min-height: 100vh; display: grid; place-items: center;
+           font-family: system-ui, sans-serif; background: #f4efe6; color: #222; }
+    main { max-width: 32rem; text-align: center; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Second site</h1>
+    <p>This page is served by the <strong>second server block</strong> (port 8081),
+       with its own root (<code>www/site2/</code>) and a tiny
+       <code>client_max_body_size</code> of 100 bytes.</p>
+  </main>
+</body>
+</html>
