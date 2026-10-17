@@ -46,7 +46,6 @@ Stop the server with `Ctrl+C`: it closes every connection and CGI process cleanl
 
 ```bash
 python3 tst/tester.py                 # functional tests (the server is started automatically)
-python3 tst/tester.py --tester42      # simulation of the official 42 tester (add --big for 100 MB bodies)
 bash tst/check_single_poll.sh         # shows that a single kqueue/epoll is used
 ./webserv & python3 tst/stress.py     # stress test against a running server
 ```
